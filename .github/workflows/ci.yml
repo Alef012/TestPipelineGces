@@ -1,0 +1,29 @@
+name: Ruby App CI
+
+on: [push, pull_request]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:13.2-alpine
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:6.0.12-alpine
+        ports: ['6379:6379']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Run Tests
+        run: docker-compose run --rm app bundle exec rspec
+
+      - name: Run Lint
+        run: docker-compose run --rm app bundle exec rubocop
