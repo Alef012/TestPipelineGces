@@ -13,14 +13,16 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         volumes:
           - postgres-data:/var/lib/postgresql/data
-        environment:
+        env:
           - POSTGRES_PASSWORD=postgres
       redis-queue:
         image: redis:6.0.12-alpine
         ports: ['6379:6379']
+        volumes: redis-queue-data:/data
       redis-cache:
         image: redis:6.0.12-alpine
         ports: ['6380:6379']
+        volumes: redis-cache-data:/data
 
     steps:
       - name: Checkout code
