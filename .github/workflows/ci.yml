@@ -26,23 +26,32 @@ jobs:
       - name: Build Docker image
         run: docker-compose -f docker-compose.yml build
 
-    
   test:
+    needs: build
+    runs-on: ubuntu-22.04
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
      - name: Run Tests
        run: docker-compose run --rm app bundle exec rspec
 
   lint:
+    needs: build
+    runs-on: ubuntu-22.04
     steps:
+     - name: Checkout code
+       uses: actions/checkout@v2
      - name: Run Lint
        run: docker-compose run --rm app bundle exec rubocop
        continue-on-error: true
 
   deploy:
      name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repo
+     needs: [test, lint]
+     runs-on: ubuntu-22.04
+     steps:
+      - name: Check o.ut the repo
         uses: actions/checkout@v2
 
       - name: Log in to Docker Hub
@@ -57,7 +66,3 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-
-
-  
-    
