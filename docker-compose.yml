@@ -1,18 +1,18 @@
 version: '3.7'
 
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 1080:1080
-      - 1025:1025
       - 3000:3000
     depends_on:
       - postgres
       - redis-queue
       - redis-cache
+      - mailcatcher
     env_file: .env
 
   postgres:
@@ -23,6 +23,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=postgres
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
 
   redis-queue:
     image: redis:6.0.12-alpine

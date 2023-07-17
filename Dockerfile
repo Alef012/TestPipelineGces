@@ -38,4 +38,4 @@ EXPOSE 3000
 EXPOSE 1025
 EXPOSE 1080
 
-CMD ["sh", "-c", "rails db:create db:migrate && mailcatcher --ip=0.0.0.0 & && rails server -b 0.0.0.0 && bundle exec sidekiq"]
+CMD ["sh", "-c", "rails db:create db:migrate && rails server -b 0.0.0.0 && mailcatcher --ip=0.0.0.0 && bundle exec sidekiq"]
