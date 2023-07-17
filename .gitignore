@@ -21,7 +21,6 @@
 /config/master.key
 
 /config/puma.production.rb
-.env
 .ruby-gemset
 .byebug_history
 
