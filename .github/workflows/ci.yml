@@ -3,7 +3,7 @@ name: Ruby App CI
 on: [push, pull_request]
 
 jobs:
-  build_and_test:
+  build:
     runs-on: ubuntu-22.04
 
     services:
@@ -26,9 +26,38 @@ jobs:
       - name: Build Docker image
         run: docker-compose -f docker-compose.yml build
 
-      - name: Run Tests
-        run: docker-compose run --rm app bundle exec rspec
+    
+  test:
+    steps:
+     - name: Run Tests
+       run: docker-compose run --rm app bundle exec rspec
 
-      - name: Run Lint
-        run: docker-compose run --rm app bundle exec rubocop
-        continue-on-error: true
+  lint:
+    steps:
+     - name: Run Lint
+       run: docker-compose run --rm app bundle exec rubocop
+       continue-on-error: true
+
+  deploy:
+     name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+
+  
+    
